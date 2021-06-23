@@ -1,4 +1,4 @@
-package br.com.mateuschacon.transacao.Kafka.TransactionResource;
+package br.com.mateuschacon.transacao.Kafka.KafkaTransactionResource;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;

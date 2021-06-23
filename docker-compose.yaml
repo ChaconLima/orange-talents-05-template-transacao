@@ -88,7 +88,7 @@ services:
     depends_on:
       - kafka
     environment:
-      TRANSACTION_DELAY: 1000 # tempo em milisegunds
+      TRANSACTION_DELAY: 50000 # tempo em milisegunds
       SERVER_PORT: 7777
       LOG_LEVEL: INFO
       KAFKA_HOST: "kafka:29092"
@@ -135,6 +135,25 @@ services:
       VAULT_TOKEN: ee413645-dbe8-4848-afc6-6bb2768ada75
       VAULT_ADDR: http://127.0.0.1:8200
   
+  mysql:
+    image: mysql:8.0.25
+    restart: always
+    volumes:
+      - mysql-volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: "container_proposta"
+      MYSQL_USER: "user_proposta"
+      MYSQL_PASSWORD: "proposta123mysql"
+      MYSQL_ROOT_PASSWORD: "proposta123mysql"
+    ports:
+      - 3309:3306
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+
   consumer-transacoes:
     build:
       dockerfile: Dockerfile
@@ -142,6 +161,9 @@ services:
     container_name: consumer-transacoes
     environment:
       APP_PORT: "8821"
+      CONTAINER_DATABASE_URL: "jdbc:mysql://mysql:3306/container_proposta?allowPublicKeyRetrieval=true&useSSL=false"
+      CONTAINER_DATABASE_USERNAME: "user_proposta"
+      CONTAINER_DATABASE_PASSWORD: "proposta123mysql"
       KAFKA_BOOTSTRAP_SERVERS: "kafka:29092"
       KAFKA_GRUP_ID: "transacoes"
       KAFKA_CONCURRENCY: "1"
@@ -153,9 +175,15 @@ services:
       - kafka
       - transacoes
 
+    depends_on:
+      mysql:
+        condition: service_healthy
+
     ports:
       - 8080:8821
+
 volumes:
+  mysql-volume:
   grafana-volume:
   prometheus-volume:
   postgres-volume:
