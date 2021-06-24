@@ -161,6 +161,8 @@ services:
     container_name: consumer-transacoes
     environment:
       APP_PORT: "8821"
+      HOST_KEYCLOAK_CLIENT: "http://host.docker.internal:18080/auth/realms/transacao"
+      HOST_KEYCLOAK_CERTIFICADO: "http://keycloak:8080/auth/realms/transacao/protocol/openid-connect/certs"
       CONTAINER_DATABASE_URL: "jdbc:mysql://mysql:3306/container_proposta?allowPublicKeyRetrieval=true&useSSL=false"
       CONTAINER_DATABASE_USERNAME: "user_proposta"
       CONTAINER_DATABASE_PASSWORD: "proposta123mysql"
